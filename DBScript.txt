@@ -1,0 +1,99 @@
+﻿CREATE TABLE[dbo].[tblUser](
+[uId]	INT IDENTITY (1,1) NOT NULL PRIMARY KEY,
+[Username] VARCHAR (50) NOT NULL,
+[Password] VARCHAR (50) NOT NULL,
+[FullName] VARCHAR (50) NULL,
+[UserType] VARCHAR (50) NULL,
+);
+GO
+
+CREATE TABLE[dbo].[tblMonth](
+[Id]	INT IDENTITY (1,1) NOT NULL PRIMARY KEY,
+[MonthName] VARCHAR (50) NOT NULL,
+[UserId] INT NOT NULL 
+FOREIGN KEY ([UserId]) REFERENCES [dbo].[tblUser]([uId])
+ON DELETE CASCADE
+);
+GO
+
+CREATE TABLE[dbo].[tblCustomer](
+[cId]	INT IDENTITY (1,1) NOT NULL,
+[Name] VARCHAR (50) NOT NULL,
+[email] VARCHAR (50) NOT NULL,
+[phone] VARCHAR (13) NOT NULL,
+[uId]	INT NULL,
+PRIMARY KEY CLUSTERED ([cId] ASC),
+FOREIGN KEY ([uId]) REFERENCES [dbo].[tblUser]([uId])
+ON DELETE CASCADE
+);
+GO
+	
+
+CREATE TABLE[dbo].[tblExpenseCategory](
+[ecId]	INT IDENTITY (1,1) NOT NULL PRIMARY KEY,
+[CategoryName] VARCHAR (50) NOT NULL,
+[UserId] INT NOT NULL,
+FOREIGN KEY ([UserId]) REFERENCES [dbo].[tblUser]([uId])
+ON DELETE CASCADE
+);
+GO
+
+
+CREATE TABLE [dbo].[tblExpenseItem] (
+[eiId] INT IDENTITY (1,1) NOT NULL PRIMARY KEY,
+[ItemName] VARCHAR (50)  NOT NULL,
+[Cost] MONEY  NOT NULL,
+[Description] VARCHAR (50)  NOT NULL,
+[ExpenseCategoryId] INT  NOT NULL,
+[UserId] INT NOT NULL,
+FOREIGN KEY ([UserId]) REFERENCES [dbo].[tblUser]([uId]),
+FOREIGN KEY ([ExpenseCategoryId]) REFERENCES [dbo].[tblExpenseCategory] ([ecId])
+ON DELETE CASCADE
+);
+GO
+
+
+CREATE TABLE [dbo].[tblPaymentType] (
+[Id] INT IDENTITY (1,1) NOT NULL PRIMARY KEY,
+[PaymentTypeName] VARCHAR(50) NOT NULL,
+[UserId] INT NOT NULL,
+FOREIGN KEY ([UserId]) REFERENCES [dbo].[tblUser]([uId])
+ON DELETE CASCADE
+);
+GO
+
+
+CREATE TABLE [dbo].[tblExpenseRecord] (
+    [erId] INT IDENTITY (1,1) NOT NULL PRIMARY KEY,
+    [UserId]        INT           NOT NULL,
+    [MonthId]       INT           NOT NULL,
+    [ExpCategoryId] INT           NOT NULL,
+    [PaymentTypeId] INT           NOT NULL,
+    [Cost]          MONEY         NOT NULL,
+    [Description]   VARCHAR (500) NULL,
+    [ExpItemId]     INT           NOT NULL,
+FOREIGN KEY ([UserId]) REFERENCES [dbo].[tblUser]([uId]),
+FOREIGN KEY ([ExpCategoryId]) REFERENCES [dbo].[tblExpenseCategory] ([ecId]),
+FOREIGN KEY ([MonthId]) REFERENCES [dbo].[tblMonth] ([Id]),
+FOREIGN KEY ([PaymentTypeId]) REFERENCES [dbo].[tblPaymentType] ([Id]),
+FOREIGN KEY ([ExpItemId]) REFERENCES [dbo].[tblExpenseItem] ([eiId])
+ON DELETE CASCADE
+);
+GO
+
+INSERT INTO tblUser VALUES ('admin','123', 'Administrator','admin')
+GO
+
+
+INSERT INTO tblMonth VALUES ('January',1),('February',1),('March',1),('April',1),('May',1),
+('June',1),('July',1),('August',1),('September',1),('October',1),('November',1),('December',1)
+GO
+
+
+INSERT INTO tblExpenseCategory VALUES ('Home',1),('Insurance',1),('Transport',1),('Saving',1),('Family',1),
+('Health',1),('Clothes',1),('Education',1),('Food',1)
+GO
+
+
+INSERT INTO tblPaymentType VALUES ('Credit Card',1),('Debit Card',1),('Cash',1)
+GO
